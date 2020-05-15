@@ -19,7 +19,7 @@ function packages_base() {
         compton \
         polybar
 
-    pamac install 
+    pamac install \
         google-chrome \
         tableplus \
         zoom \
