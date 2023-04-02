@@ -14,7 +14,9 @@ compinit
 zstyle ':vcs_info:git:*' formats '%b '
 
 setopt PROMPT_SUBST
-PROMPT='%F{green}%*%f %F{blue}%~%f %F{red}${vcs_info_msg_0_}%f$ '
+PROMPT=$'
+%F{green}%n@%m%f %F{blue}[%*]%f [%~] %F{red}${vcs_info_msg_0_}%f\
+%F{blue}-> % %f'
 
 # Path export
 export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin/:$PATH
@@ -38,5 +40,8 @@ export GOSUMDB=off
 
 # iterm2 configuration
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# Aliases
+alias ll='ls -lah'
 
 autoload -U +X bashcompinit && bashcompinit
