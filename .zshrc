@@ -17,6 +17,7 @@ PROMPT='%F{green}%*%f %F{blue}%~%f %F{red}${vcs_info_msg_0_}%f$ '
 export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin/:$PATH
 
 # Set plugins list
+source $HOME/.config/github/dotfiles/zsh_plugins
 plugins=(aws terraform brew git kubectl history-substring-search)
 
 # User configuration
