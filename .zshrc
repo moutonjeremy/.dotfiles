@@ -8,6 +8,9 @@ export CLICOLOR_FORCE=1
 # Don't require escaping globbing characters in zsh.
 unsetopt nomatch
 
+autoload -Uz compinit
+compinit
+
 zstyle ':vcs_info:git:*' formats '%b '
 
 setopt PROMPT_SUBST
@@ -18,12 +21,12 @@ export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin/:$PATH
 
 # Set plugins list
 source $HOME/.config/github/dotfiles/zsh_plugins/aws.plugin.zsh
-source $HOME/.config/github/dotfiles/zsh_plugins/terraform.plugin.zsh
-source $HOME/.config/github/dotfiles/zsh_plugins/brew.plugin.zsh
-source $HOME/.config/github/dotfiles/zsh_plugins/kubectl.plugin.zsh
-source $HOME/.config/github/dotfiles/zsh_plugins/kubectx.plugin.zsh
-source $HOME/.config/github/dotfiles/zsh_plugins/git.plugin.zsh
-plugins=(aws terraform brew git kubectl kubectx)
+# source $HOME/.config/github/dotfiles/zsh_plugins/terraform.plugin.zsh
+# source $HOME/.config/github/dotfiles/zsh_plugins/brew.plugin.zsh
+# source $HOME/.config/github/dotfiles/zsh_plugins/kubectl.plugin.zsh
+# source $HOME/.config/github/dotfiles/zsh_plugins/kubectx.plugin.zsh
+# source $HOME/.config/github/dotfiles/zsh_plugins/git.plugin.zsh
+plugins=(aws)
 
 # User configuration
 
