@@ -8,6 +8,12 @@
 defaults write com.apple.dock autohide-delay -float 9999; killall Dock
 ```
 
+## Fonts
+  
+```bash
+brew tap homebrew/cask-fonts
+brew install homebrew/cask-fonts/font-hack-nerd-font
+```
 
 ## sketchybar
 
