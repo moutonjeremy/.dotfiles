@@ -115,3 +115,6 @@ alias kdi="kubectl describe ing"
 
 export PATH="$HOME/.krew/bin:/opt/homebrew/bin:$HOME/go/bin:$PATH"
 export GOSUMDB=off
+
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
