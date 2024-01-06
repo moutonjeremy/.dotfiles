@@ -8,6 +8,9 @@ if [ ! -d "/opt/homebrew" ]; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
+# install rosetta
+sudo softwareupdate --install-rosetta
+
 # Install brew packages
 /opt/homebrew/bin/brew install git
 /opt/homebrew/bin/brew install zsh
@@ -36,19 +39,5 @@ fi
 # configure zsh
 stow zsh
 
-# install sketchybar
-/opt/homebrew/bin/brew tap FelixKratz/formulae
-/opt/homebrew/bin/brew install sketchybar
-stow sketchybar
-
-# install yabai
-/opt/homebrew/bin/brew install koekeishiya/formulae/yabai
-yabai --load-sa
-yabai --install-service
-yabai --start-service
-stow yabai
-
-# install skhd
-/opt/homebrew/bin/brew install koekeishiya/formulae/skhd
-skhd --install-service
-skhd --start-service
+# install DDPM (dell display manager)
+/opt/homebrew/bin/brew install --cask ddpm
