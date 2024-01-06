@@ -18,6 +18,8 @@ brew install homebrew/cask-fonts/font-hack-nerd-font
 ## sketchybar
 
 ```bash
+brew tap FelixKratz/formulae
+brew install sketchybar
 stow sketchybar
 ```
 
@@ -37,5 +39,6 @@ brew services start skhd
 ## zsh
 
 ```bash
+brew install zsh
 stow zsh
 ```
