@@ -17,7 +17,7 @@ shift + alt - l : yabai -m window --warp east
 # fast focus desktop
 # enabled in Sys Pref > Keyboard > Shortcuts > Mission Control > Switch To Desktop X
 
-shift + ctrl + n : yabai -m space --create
+# shift + ctrl + n : yabai -m space --create
 
 # send window to desktop and follow focus
 # shift + cmd - z : yabai -m window --space next; yabai -m space --focus next
@@ -37,8 +37,8 @@ alt - 0x29 : yabai -m display --focus next
 # ctrl + alt - 3  : yabai -m display --focus 3
 
 # send window to monitor and follow focus
-shift + alt - 0x2B : yabai -m window --display prev; yabai -m display --focus prev
-shift + alt - 0x29 : yabai -m window --display next; yabai -m display --focus next
+# shift + alt - 0x2B : yabai -m window --display prev; yabai -m display --focus prev
+# shift + alt - 0x29 : yabai -m window --display next; yabai -m display --focus next
 # ctrl + cmd - 1  : yabai -m window --display 1; yabai -m display --focus 1
 
 # toggle window zoom
