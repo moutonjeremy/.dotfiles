@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Install xcode command line tools
+xcode-select --install
+
+# Install homebrew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# Install brew packages
+brew install git
+brew install zsh
+brew install zsh-completions
+brew install zsh-syntax-highlighting
+brew install zsh-autosuggestions
+brew install go
+brew install bruno
+
+# Install brew cask packages
+brew install --cask iterm2
+brew install --cask arc
+brew install --cask spotify
+brew install --cask visual-studio-code
+brew install --cask notion
+brew install --cask slack
+brew install --cask alt-tab
+brew install --cask bambu-studio
+brew install --cask raycast
+
+# Configure desktop/term
+# install fonts
+brew tap homebrew/cask-fonts
+brew install homebrew/cask-fonts/font-hack-nerd-font
+
+# configure zsh
+stow zsh
+
+# install sketchybar
+brew tap FelixKratz/formulae
+brew install sketchybar
+stow sketchybar
+
+# install yabai
+brew install koekeishiya/formulae/yabai
+yabai --load-sa
+yabai --install-service
+yabai --start-service
+stow yabai
+
+# install skhd
+brew install koekeishiya/formulae/skhd
+skhd --install-service
+skhd --start-service
