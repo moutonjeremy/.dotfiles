@@ -74,7 +74,11 @@ function install_macos_apps() {
 
   # install rosetta
   echo "🕑 Installing rosetta."
-  /usr/sbin/softwareupdate --install-rosetta --agree-to-license >/dev/null 2>&1 && echo "✅ Rosetta installed." || echo "❌ Rosetta failed to install."; exit 1
+  if $(/usr/sbin/softwareupdate --install-rosetta --agree-to-license >/dev/null 2>&1); then
+    echo "✅ Rosetta installed."
+  else
+    echo "❌ Rosetta failed to install."
+  fi
 
   # install brew apps
   echo "🕑 Installing brew apps."
