@@ -14,6 +14,8 @@ brew_apps=(
   zsh-autosuggestions
   go
   bruno
+  awscli
+  aws-iam-authenticator
   m1ddc
   terraform
   helm
@@ -36,7 +38,6 @@ brew_cask_apps_base=(
 brew_cask_apps_personal=(
   discord
   twitch
-  obs
   vlc
   bambu-studio
 )
@@ -63,7 +64,7 @@ function install_macos_apps() {
 
   # Install homebrew
   echo "🕑 Installing brew."
-  if command -v brew >/dev/null; then
+  if command -v /opt/homebrew/bin/brew >/dev/null; then
     echo "⏩ Brew seems to already be installed; skipping."
   else
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -73,8 +74,7 @@ function install_macos_apps() {
 
   # install rosetta
   echo "🕑 Installing rosetta."
-  sudo softwareupdate --install-rosetta
-  echo "✅ Rosetta installed."
+  /usr/sbin/softwareupdate --install-rosetta --agree-to-license >/dev/null 2>&1 && echo "✅ Rosetta installed." || echo "❌ Rosetta failed to install."; exit 1
 
   # install brew apps
   echo "🕑 Installing brew apps."
@@ -90,10 +90,11 @@ function install_macos_apps() {
 # install brew apps if not installed
 function brew_apps_install() {
   for app in "${brew_apps[@]}"; do
-    if [ -z $(brew list $app | grep Error) ]; then
+    if [ ! -z $(/opt/homebrew/bin/brew list $app | grep Error) ]; then
       echo "🕑 Installing $app."
-      /opt/homebrew/bin/brew install $app
-      echo "✅ $app installed."
+      /opt/homebrew/bin/brew install $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
+    else 
+      echo "⏩ $app seems to already be installed; skipping."
     fi
   done
 }
@@ -106,10 +107,11 @@ function brew_cask_apps_install() {
     brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_personal[@]}")
   fi
   for app in "${brew_cask_apps[@]}"; do
-    if [ -z $(brew list $app | grep Error) ]; then
+    if [ ! -z $(/opt/homebrew/bin/brew list $app | grep Error) ]; then
       echo "🕑 Installing $app."
-      /opt/homebrew/bin/brew install --cask $app
-      echo "✅ $app installed."
+      /opt/homebrew/bin/brew install --cask $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
+    else 
+      echo "⏩ $app seems to already be installed; skipping."
     fi
   done
 }
@@ -127,3 +129,6 @@ function stow_folders() {
 if [ "$(uname)" == "Darwin" ]; then
   install_macos_apps
 fi
+
+# stow folders
+stow_folders
