@@ -90,7 +90,7 @@ function install_macos_apps() {
 # install brew apps if not installed
 function brew_apps_install() {
   for app in "${brew_apps[@]}"; do
-    if [ ! -z $(/opt/homebrew/bin/brew list $app | grep Error) ]; then
+    if ! $(/opt/homebrew/bin/brew list $app >/dev/null 2>&1); then
       echo "🕑 Installing $app."
       /opt/homebrew/bin/brew install $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
     else 
@@ -107,7 +107,7 @@ function brew_cask_apps_install() {
     brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_personal[@]}")
   fi
   for app in "${brew_cask_apps[@]}"; do
-    if [ ! -z $(/opt/homebrew/bin/brew list $app | grep Error) ]; then
+    if ! $(/opt/homebrew/bin/brew list $app >/dev/null 2>&1); then
       echo "🕑 Installing $app."
       /opt/homebrew/bin/brew install --cask $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
     else 
