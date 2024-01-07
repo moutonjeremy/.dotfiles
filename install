@@ -1,37 +1,129 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Install xcode command line tools
-xcode-select --install
+set -e
 
-# Install homebrew
-if [ ! -d "/opt/homebrew" ]; then
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Ask if the computer is for work or personal
+echo "❓ Is this computer for work or personal? (w/p)"
+read -r computer_type
+
+brew_apps=(
+  git
+  zsh
+  zsh-completions
+  zsh-syntax-highlighting
+  zsh-autosuggestions
+  go
+  bruno
+  m1ddc
+  terraform
+  helm
+  kubectl
+  kubectx
+  argocd
+)
+
+brew_cask_apps_base=(
+  iterm2
+  arc
+  spotify
+  visual-studio-code
+  notion
+  slack
+  alt-tab
+  raycast
+)
+
+brew_cask_apps_personal=(
+  discord
+  twitch
+  obs
+  vlc
+  bambu-studio
+)
+
+brew_cask_apps_work=(
+  zoom
+)
+
+stow_folders=(
+  zsh/config
+  git
+)
+
+########### Functions ###########
+function install_macos_apps() {
+  # Install xcode command line tools
+  echo "🕑 Installing xcode command line tools."
+  if command -v xcode-select -p >/dev/null; then
+    echo "⏩ Xcode command line tools seems to already be installed; skipping."
+  else
+    xcode-select --install
+    echo "✅ Xcode command line tools installed."
+  fi
+
+  # Install homebrew
+  echo "🕑 Installing brew."
+  if command -v brew >/dev/null; then
+    echo "⏩ Brew seems to already be installed; skipping."
+  else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    echo "✅ Brew installed."
+  fi
+
+
+  # install rosetta
+  echo "🕑 Installing rosetta."
+  sudo softwareupdate --install-rosetta
+  echo "✅ Rosetta installed."
+
+  # install brew apps
+  echo "🕑 Installing brew apps."
+  brew_apps_install
+  echo "✅ Brew apps installed."
+
+  # install brew cask apps
+  echo "🕑 Installing brew cask apps."
+  brew_cask_apps_install
+  echo "✅ Brew cask apps installed."
+}
+
+# install brew apps if not installed
+function brew_apps_install() {
+  for app in "${brew_apps[@]}"; do
+    if [ -z $(brew list $app | grep Error) ]; then
+      echo "🕑 Installing $app."
+      /opt/homebrew/bin/brew install $app
+      echo "✅ $app installed."
+    fi
+  done
+}
+
+# install brew cask apps if not installed
+function brew_cask_apps_install() {
+  if [ "$computer_type" == "w" ]; then
+    brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_work[@]}")
+  else
+    brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_personal[@]}")
+  fi
+  for app in "${brew_cask_apps[@]}"; do
+    if [ -z $(brew list $app | grep Error) ]; then
+      echo "🕑 Installing $app."
+      /opt/homebrew/bin/brew install --cask $app
+      echo "✅ $app installed."
+    fi
+  done
+}
+
+function stow_folders() {
+  for folder in "${stow_folders[@]}"; do
+    echo "🕑 Stowing $folder."
+    stow $folder
+    echo "✅ $folder stowed."
+  done
+}
+
+########### Main ###########
+# if macos
+if [ "$(uname)" == "Darwin" ]; then
+  install_macos_apps
 fi
-
-# install rosetta
-sudo softwareupdate --install-rosetta
-
-# Install brew packages
-/opt/homebrew/bin/brew install git
-/opt/homebrew/bin/brew install zsh
-/opt/homebrew/bin/brew install zsh-completions
-/opt/homebrew/bin/brew install zsh-syntax-highlighting
-/opt/homebrew/bin/brew install zsh-autosuggestions
-/opt/homebrew/bin/brew install go
-/opt/homebrew/bin/brew install bruno
-/opt/homebrew/bin/brew install m1ddc
-
-# Install brew cask packages
-/opt/homebrew/bin/brew install --cask iterm2
-/opt/homebrew/bin/brew install --cask arc
-/opt/homebrew/bin/brew install --cask spotify
-/opt/homebrew/bin/brew install --cask visual-studio-code
-/opt/homebrew/bin/brew install --cask notion
-/opt/homebrew/bin/brew install --cask slack
-/opt/homebrew/bin/brew install --cask alt-tab
-/opt/homebrew/bin/brew install --cask bambu-studio
-/opt/homebrew/bin/brew install --cask raycast
-
-# Configure desktop/term
-# configure zsh
-stow zsh
