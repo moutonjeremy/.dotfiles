@@ -64,10 +64,6 @@ z4h source ~/.env.zsh
 #
 # This is just an example that you should delete. It does nothing useful.
 z4h source ~/.dotfiles/zsh/plugins/aws.plugin.zsh
-z4h source ~/.dotfiles/zsh/plugins/git.plugin.zsh
-z4h source ~/.dotfiles/zsh/plugins/kubectl.plugin.zsh
-z4h source ~/.dotfiles/zsh/plugins/kubectx.plugin.zsh
-z4h source ~/.dotfiles/zsh/plugins/terraform.plugin.zsh
 # z4h source ohmyzsh/ohmyzsh/lib/diagnostics.zsh  # source an individual file
 # z4h load   ohmyzsh/ohmyzsh/plugins/emoji-clock  # load a plugin
 
