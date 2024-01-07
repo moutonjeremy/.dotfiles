@@ -50,11 +50,6 @@ brew_cask_apps_work=(
   zoom
 )
 
-stow_folders=(
-  zsh/config
-  git
-)
-
 ########### Functions ###########
 function install_macos_apps() {
   # Install xcode command line tools
@@ -124,14 +119,6 @@ function brew_cask_apps_install() {
   done
 }
 
-function stow_folders() {
-  for folder in "${stow_folders[@]}"; do
-    echo "🕑 Stowing $folder."
-    /opt/homebrew/bin/stow $folder
-    echo "✅ $folder stowed."
-  done
-}
-
 function update_apps() {
   echo "🕑 Updating brew apps."
   if $(/opt/homebrew/bin/brew update >/dev/null 2>&1); then
@@ -139,6 +126,15 @@ function update_apps() {
   else
     echo "❌ Brew apps failed to update."
   fi
+}
+
+function stow_folders() {
+  echo "🕑 Stowing folders."
+  /opt/homebrew/bin/stow -t ~ git
+  cd zsh
+  /opt/homebrew/bin/stow -t ~ config
+  cd ..
+  echo "✅ Folders stowed."
 }
 
 ########### Main ###########
