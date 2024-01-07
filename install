@@ -19,6 +19,7 @@ sudo softwareupdate --install-rosetta
 /opt/homebrew/bin/brew install zsh-autosuggestions
 /opt/homebrew/bin/brew install go
 /opt/homebrew/bin/brew install bruno
+/opt/homebrew/bin/brew install m1ddc
 
 # Install brew cask packages
 /opt/homebrew/bin/brew install --cask iterm2
@@ -34,6 +35,3 @@ sudo softwareupdate --install-rosetta
 # Configure desktop/term
 # configure zsh
 stow zsh
-
-# install DDPM (dell display manager)
-/opt/homebrew/bin/brew install --cask ddpm
