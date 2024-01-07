@@ -32,10 +32,6 @@ sudo softwareupdate --install-rosetta
 /opt/homebrew/bin/brew install --cask raycast
 
 # Configure desktop/term
-# install fonts
-/opt/homebrew/bin/brew tap homebrew/cask-fonts
-/opt/homebrew/bin/brew install homebrew/cask-fonts/font-hack-nerd-font
-
 # configure zsh
 stow zsh
 
