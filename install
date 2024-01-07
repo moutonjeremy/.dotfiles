@@ -6,6 +6,9 @@ set -e
 echo "❓ Is this computer for work or personal? (w/p)"
 read -r computer_type
 
+echo "❓ Update all apps? (y/n)"
+read -r update_apps
+
 brew_apps=(
   git
   zsh
@@ -22,6 +25,7 @@ brew_apps=(
   kubectl
   kubectx
   argocd
+  stow
 )
 
 brew_cask_apps_base=(
@@ -123,16 +127,29 @@ function brew_cask_apps_install() {
 function stow_folders() {
   for folder in "${stow_folders[@]}"; do
     echo "🕑 Stowing $folder."
-    stow $folder
+    /opt/homebrew/bin/stow $folder
     echo "✅ $folder stowed."
   done
 }
 
+function update_apps() {
+  echo "🕑 Updating brew apps."
+  if $(/opt/homebrew/bin/brew update >/dev/null 2>&1); then
+    echo "✅ Brew apps updated."
+  else
+    echo "❌ Brew apps failed to update."
+  fi
+}
+
 ########### Main ###########
-# if macos
-if [ "$(uname)" == "Darwin" ]; then
-  install_macos_apps
+if [ "$update_apps" == "y" ]; then
+  echo "🕑 Updating all apps."
+  update_apps
+  echo "✅ All apps updated."
+  exit 0
 fi
+
+install_macos_apps
 
 # stow folders
 stow_folders
