@@ -202,12 +202,9 @@ function app_rename() {
 }
 
 function get_private_config() {
-  if [[ -z $proton_drive_email ]]; then
-    echo "❌ Proton Drive email not provided; skipping."
-    return
-  fi
-  if [[ -z $(ls ~/Library/CloudStorage | grep "ProtonDrive-$proton_drive_email") ]]; then
-    echo "❌ Proton Drive dotfiles folder not found, please mount your drive; skipping."
+  echo "🕑 Checking if Proton Drive is ready for getting private config."
+  if [[ -z $proton_drive_is_ready ]]; then
+    echo "❌ Proton Drive not ready; skipping."
     return
   fi
   echo "🕑 Getting private config."
@@ -233,6 +230,7 @@ function macos_config_command() {
   defaults write com.apple.desktopservices DSDontWriteNetworkStores true # Disable .DS_Store files on network volumes
 }
 
+
 function kubectl_configure() {
   echo "🕑 Configuring kubectl."
   echo "🕑 Install Krew."
@@ -255,6 +253,54 @@ function kubectl_configure() {
       echo "⏩ $plugin seems to already be installed; skipping."
     fi
   done
+}
+
+## Get git repos
+function get_git_repo() {
+  echo "🕑 Getting git repos."
+  echo "🕑 Checking if Proton Drive is ready for getting repo list."
+  if [[ -z $proton_drive_is_ready ]]; then
+    echo "❌ Proton Drive not ready; skipping."
+    return
+  fi
+  if [[ $computer_type -eq "w" ]]; then
+    echo "🕑 Getting git repo for work computer."
+    mkdir -p ~/work
+    clone_repos work
+  else
+    echo "🕑 Getting git repo for personal computer."
+    mkdir -p ~/{personal,biz}
+    clone_repos personal
+    clone_repos biz
+  fi
+}
+
+## Clone repos from repo list in Proton Drive
+function clone_repos() {
+  folder=$1
+  cd ~/$folder
+  if [[ -z $(test ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal/git-repos) ]]; then
+    echo "❌ No git repos found; skipping."
+    return
+  else
+    for repo in $(cat ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal/git-repos); do
+      git clone "$repo"
+    done
+  fi
+  cd ..
+}
+
+## Check if Proton Drive is ready
+function proton_drive_is_ready() {
+  if [[ -z $proton_drive_email ]]; then
+    echo "❌ Proton Drive email not provided; skipping."
+    return false
+  fi
+  if [[ -z $(ls ~/Library/CloudStorage | grep "ProtonDrive-$proton_drive_email") ]]; then
+    echo "❌ Proton Drive dotfiles folder not found, please mount your drive; skipping."
+    return false
+  fi
+  return true
 }
 
 ########### Main ###########
