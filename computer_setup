@@ -2,36 +2,14 @@
 
 set -e
 
+########### Variables ###########
 computer_type=""
 get_config=""
 proton_drive_email=""
 config_exists=false
+current_dir=$(pwd)
 
-if [[ -f .config ]]; then
-  computer_type=$(cat .config | grep computer_type | cut -d "=" -f2)
-  get_config=$(cat .config | grep get_config | cut -d "=" -f2)
-  proton_drive_email=$(cat .config | grep proton_drive_email | cut -d "=" -f2)
-  config_exists=true
-fi
-
-if [[ "$config_exists" == "false" ]]; then
-  # Ask if the computer is for work or personal
-  echo "❓ Is this computer for work or personal? (w/p)"
-  read -r computer_type
-
-  echo "❓ Get private config from Proton Drive? (y/n)"
-  read -r get_config
-
-  if [ "$get_config" == "y" ]; then
-    echo "❓ Enter Proton Drive email:"
-    read -r proton_drive_email
-  fi
-
-  echo "computer_type=$computer_type" >>.config
-  echo "get_config=$get_config" >>.config
-  echo "proton_drive_email=$proton_drive_email" >>.config
-fi
-
+########### Applications ###########
 brew_apps=(
   git
   zsh
@@ -82,6 +60,7 @@ brew_cask_apps_work=(
   aws-vpn-client
 )
 
+########### Kubectl Plugins ###########
 kubectl_plugins=(
   switch-config
   socks5-proxy
@@ -156,12 +135,24 @@ function brew_cask_apps_install() {
   done
 }
 
-function update_apps() {
-  echo "🕑 Updating brew apps."
-  if $(/opt/homebrew/bin/brew update >/dev/null 2>&1); then
-    echo "✅ Brew apps updated."
+function upgrade_apps() {
+  echo "🕑 Upgrading brew apps."
+  if $(/opt/homebrew/bin/brew upgrade >/dev/null 2>&1); then
+    echo "✅ Brew apps Upgraded."
   else
-    echo "❌ Brew apps failed to update."
+    echo "❌ Brew apps failed to upgrade."
+  fi
+}
+
+## Check if Proton Drive is ready
+function proton_drive_is_ready() {
+  if [[ -z $proton_drive_email ]]; then
+    echo "no email"
+  fi
+  if [[ -z $(ls ~/Library/CloudStorage | grep "ProtonDrive-$proton_drive_email") ]]; then
+    echo "no proton drive folder"
+  else
+    echo "proton drive ready"
   fi
 }
 
@@ -203,8 +194,9 @@ function app_rename() {
 
 function get_private_config() {
   echo "🕑 Checking if Proton Drive is ready for getting private config."
-  if [[ -z $proton_drive_is_ready ]]; then
-    echo "❌ Proton Drive not ready; skipping."
+  status=$(proton_drive_is_ready)
+  if [[ $status -ne "proton drive ready" ]]; then
+    echo "❌ Proton Drive not ready; $status; skipping."
     return
   fi
   echo "🕑 Getting private config."
@@ -230,20 +222,19 @@ function macos_config_command() {
   defaults write com.apple.desktopservices DSDontWriteNetworkStores true # Disable .DS_Store files on network volumes
 }
 
-
+## Configure kubectl
 function kubectl_configure() {
   echo "🕑 Configuring kubectl."
   echo "🕑 Install Krew."
-  $(
-    set -x; cd "$(mktemp -d)" &&
+  cd "$(mktemp -d)" &&
     OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
     ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
     KREW="krew-${OS}_${ARCH}" &&
     curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
     tar zxvf "${KREW}.tar.gz" &&
-    ./"${KREW}" install krew
-  ) >/dev/null 2>&1 && echo "✅ Krew installed." || echo "❌ Krew failed to install."
-
+    ./"${KREW}" install krew >/dev/null 2>&1 && echo "✅ Krew installed." || echo "❌ Krew failed to install."
+  
+  cd $current_dir
   echo "🕑 Installing kubectl plugins."
   for plugin in "${kubectl_plugins[@]}"; do
     if ! $(/opt/homebrew/bin/kubectl krew list | grep "$plugin" >/dev/null 2>&1); then
@@ -259,8 +250,9 @@ function kubectl_configure() {
 function get_git_repo() {
   echo "🕑 Getting git repos."
   echo "🕑 Checking if Proton Drive is ready for getting repo list."
-  if [[ -z $proton_drive_is_ready ]]; then
-    echo "❌ Proton Drive not ready; skipping."
+  status=$(proton_drive_is_ready)
+  if [[ $status -ne "proton drive ready" ]]; then
+    echo "❌ Proton Drive not ready; $status; skipping."
     return
   fi
   if [[ $computer_type -eq "w" ]]; then
@@ -290,30 +282,93 @@ function clone_repos() {
   cd ..
 }
 
-## Check if Proton Drive is ready
-function proton_drive_is_ready() {
-  if [[ -z $proton_drive_email ]]; then
-    echo "❌ Proton Drive email not provided; skipping."
-    return false
+## Configure ssh config
+function stow_ssh_config() {
+  echo "🕑 Configuring ssh config."
+  echo "🕑 Checking if Proton Drive is ready for getting ssh config."
+  status=$(proton_drive_is_ready)
+  if [[ $status -ne "proton drive ready" ]]; then
+    echo "❌ Proton Drive not ready; $status; skipping."
+    return
   fi
-  if [[ -z $(ls ~/Library/CloudStorage | grep "ProtonDrive-$proton_drive_email") ]]; then
-    echo "❌ Proton Drive dotfiles folder not found, please mount your drive; skipping."
-    return false
+
+  echo "🕑 Getting ssh config."
+  mkdir -p ~/.ssh
+  cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
+  /opt/homebrew/bin/stow -t ~/.ssh ssh
+  cd ~
+  echo "✅ Ssh config retrieved."
+}
+
+## Get script config
+function get_script_config() {
+  if [[ -f .config ]]; then
+    computer_type=$(cat .config | grep computer_type | cut -d "=" -f2)
+    get_config=$(cat .config | grep get_config | cut -d "=" -f2)
+    proton_drive_email=$(cat .config | grep proton_drive_email | cut -d "=" -f2)
+    config_exists=true
   fi
-  return true
+
+  if [[ "$config_exists" == "false" ]]; then
+    # Ask if the computer is for work or personal
+    echo "❓ Is this computer for work or personal? (w/p)"
+    read -r computer_type
+
+    echo "❓ Get private config from Proton Drive? (y/n)"
+    read -r get_config
+
+    if [ "$get_config" == "y" ]; then
+      echo "❓ Enter Proton Drive email:"
+      read -r proton_drive_email
+    fi
+
+    echo "computer_type=$computer_type" >>.config
+    echo "get_config=$get_config" >>.config
+    echo "proton_drive_email=$proton_drive_email" >>.config
+  fi
+}
+
+## Configure computer based on config
+function configure_computer() {
+  install_macos_apps
+  stow_ssh_config
+  stow_folders
+  get_private_config
+  kubectl_configure
+  get_git_repo
 }
 
 ########### Main ###########
-if [ "$update_apps" == "y" ]; then
-  echo "🕑 Updating all apps."
-  update_apps
-  echo "✅ All apps updated."
-  exit 0
-fi
-
-install_macos_apps
-
-# stow folders
-stow_folders
-get_private_config
-kubectl_configure
+case $1 in
+  upgrade| -u | --upgrade)
+    echo "🕑 Upgrading all apps."
+    upgrade_apps
+    echo "✅ All apps upgraded."
+    exit 0
+    ;;
+  configure_computer | -c | --configure_computer)
+    echo "🕑 Configuring computer."
+    get_script_config
+    configure_computer
+    exit 0
+    ;;
+  debug | -d | --debug)
+    echo "🕑 Debugging."
+    get_script_config
+    echo "computer_type=$computer_type"
+    echo "get_config=$get_config"
+    echo "proton_drive_email=$proton_drive_email"
+    echo "proton_drive_status=$(proton_drive_is_ready)"
+    echo "current_dir=$current_dir"
+    echo "✅ Debugging complete."
+    exit 0
+    ;;
+  * | -h | --help)
+    echo "⏩ Valid options are:"
+    echo "     Upgrade all apps >> upgrade | -u | --upgrade"
+    echo "     Configure computer >> configure_computer | -c | --configure_computer"
+    echo "     Debug >> debug | -d | --debug"
+    echo "     Help >> * | -h | --help"
+    exit 0
+    ;;
+esac
