@@ -2,12 +2,35 @@
 
 set -e
 
-# Ask if the computer is for work or personal
-echo "❓ Is this computer for work or personal? (w/p)"
-read -r computer_type
+computer_type=""
+get_config=""
+proton_drive_email=""
+config_exists=false
 
-echo "❓ Update all apps? (y/n)"
-read -r update_apps
+if [[ -f .config ]]; then
+  computer_type=$(cat .config | grep computer_type | cut -d "=" -f2)
+  get_config=$(cat .config | grep get_config | cut -d "=" -f2)
+  proton_drive_email=$(cat .config | grep proton_drive_email | cut -d "=" -f2)
+  config_exists=true
+fi
+
+if [[ "$config_exists" == "false" ]]; then
+  # Ask if the computer is for work or personal
+  echo "❓ Is this computer for work or personal? (w/p)"
+  read -r computer_type
+
+  echo "❓ Get private config from Proton Drive? (y/n)"
+  read -r get_config
+
+  if [ "$get_config" == "y" ]; then
+    echo "❓ Enter Proton Drive email:"
+    read -r proton_drive_email
+  fi
+
+  echo "computer_type=$computer_type" >>.config
+  echo "get_config=$get_config" >>.config
+  echo "proton_drive_email=$proton_drive_email" >>.config
+fi
 
 brew_apps=(
   git
@@ -27,6 +50,8 @@ brew_apps=(
   argocd
   stow
   warrensbox/tap/tfswitch
+  tflint
+  terraform-docs
 )
 
 brew_cask_apps_base=(
@@ -38,6 +63,9 @@ brew_cask_apps_base=(
   slack
   alt-tab
   raycast
+  tableplus
+  amethyst
+  proton-drive
 )
 
 brew_cask_apps_personal=(
@@ -45,10 +73,18 @@ brew_cask_apps_personal=(
   twitch
   vlc
   bambu-studio
+  parsec
 )
 
 brew_cask_apps_work=(
   zoom
+  openvpn-connect
+  aws-vpn-client
+)
+
+kubectl_plugins=(
+  switch-config
+  socks5-proxy
 )
 
 ########### Functions ###########
@@ -70,7 +106,6 @@ function install_macos_apps() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     echo "✅ Brew installed."
   fi
-
 
   # install rosetta
   echo "🕑 Installing rosetta."
@@ -111,7 +146,8 @@ function brew_cask_apps_install() {
     brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_personal[@]}")
   fi
   for app in "${brew_cask_apps[@]}"; do
-    if ! $(/opt/homebrew/bin/brew list $app >/dev/null 2>&1); then
+    mac_name=$(app_rename $app)
+    if ! $(/opt/homebrew/bin/brew list $app >/dev/null 2>&1) && [[ -z $(ls /Applications | tr '[:upper:]' '[:lower:]' | grep "$mac_name") ]]; then
       echo "🕑 Installing $app."
       /opt/homebrew/bin/brew install --cask $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
     else 
@@ -139,6 +175,88 @@ function stow_folders() {
   echo "✅ Folders stowed."
 }
 
+function app_rename() {
+  case $1 in
+    iterm2)
+      echo "iterm"
+      ;;
+    alt-tab)
+      echo "alttab"
+      ;;
+    visual-studio-code)
+      echo "visual studio code"
+      ;;
+    aws-vpn-client)
+      echo "aws vpn client"
+      ;;
+    bambu-studio)
+      echo "bambustudio"
+      ;;
+    proton-drive)
+      echo "proton drive"
+      ;;
+    *)
+      echo $1
+      ;;
+  esac
+}
+
+function get_private_config() {
+  if [[ -z $proton_drive_email ]]; then
+    echo "❌ Proton Drive email not provided; skipping."
+    return
+  fi
+  if [[ -z $(ls ~/Library/CloudStorage | grep "ProtonDrive-$proton_drive_email") ]]; then
+    echo "❌ Proton Drive dotfiles folder not found, please mount your drive; skipping."
+    return
+  fi
+  echo "🕑 Getting private config."
+  if [[ computer_type -eq "w" ]]; then
+    echo "🕑 Getting private config for work computer."
+    mkdir -p ~/{.aws,.kube}
+    cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/work
+    /opt/homebrew/bin/stow -t ~/.aws aws
+    /opt/homebrew/bin/stow -t ~/.kube kube
+    cd ~
+    echo "✅ Private config for work computer retrieved."
+  else
+    echo "🕑 Getting private config for personal computer."
+    mkdir ~/{.kube}
+    cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
+    /opt/homebrew/bin/stow -t ~/.kube kube
+    cd ~
+    echo "✅ Private config for personal computer retrieved."
+  fi
+}
+
+function macos_config_command() {
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores true # Disable .DS_Store files on network volumes
+}
+
+function kubectl_configure() {
+  echo "🕑 Configuring kubectl."
+  echo "🕑 Install Krew."
+  $(
+    set -x; cd "$(mktemp -d)" &&
+    OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+    ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+    KREW="krew-${OS}_${ARCH}" &&
+    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+    tar zxvf "${KREW}.tar.gz" &&
+    ./"${KREW}" install krew
+  ) >/dev/null 2>&1 && echo "✅ Krew installed." || echo "❌ Krew failed to install."
+
+  echo "🕑 Installing kubectl plugins."
+  for plugin in "${kubectl_plugins[@]}"; do
+    if ! $(/opt/homebrew/bin/kubectl krew list | grep "$plugin" >/dev/null 2>&1); then
+      echo "🕑 Installing $plugin."
+      /opt/homebrew/bin/kubectl krew install "$plugin" >/dev/null 2>&1 && echo "✅ $plugin installed." || echo "❌ $plugin failed to install."
+    else 
+      echo "⏩ $plugin seems to already be installed; skipping."
+    fi
+  done
+}
+
 ########### Main ###########
 if [ "$update_apps" == "y" ]; then
   echo "🕑 Updating all apps."
@@ -151,3 +269,5 @@ install_macos_apps
 
 # stow folders
 stow_folders
+get_private_config
+kubectl_configure
