@@ -26,6 +26,7 @@ brew_apps=(
   kubectx
   argocd
   stow
+  warrensbox/tap/tfswitch
 )
 
 brew_cask_apps_base=(
@@ -134,6 +135,7 @@ function stow_folders() {
   cd zsh
   /opt/homebrew/bin/stow -t ~ config
   cd ..
+  /opt/homebrew/bin/stow -t ~ tfswitch
   echo "✅ Folders stowed."
 }
 
