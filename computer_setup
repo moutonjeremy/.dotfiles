@@ -48,11 +48,11 @@ brew_cask_apps_base=(
 
 brew_cask_apps_personal=(
   discord
-  twitch-studio
   vlc
   bambu-studio
   parsec
   obs
+  streamlabs
 )
 
 brew_cask_apps_work=(
