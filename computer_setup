@@ -23,11 +23,10 @@ brew_apps=(
   m1ddc
   terraform
   helm
-  kubectl
+  warrensbox/tap/tfswitch
   kubectx
   argocd
   stow
-  warrensbox/tap/tfswitch
   tflint
   terraform-docs
 )
@@ -49,10 +48,11 @@ brew_cask_apps_base=(
 
 brew_cask_apps_personal=(
   discord
-  twitch
+  twitch-studio
   vlc
   bambu-studio
   parsec
+  obs
 )
 
 brew_cask_apps_work=(
