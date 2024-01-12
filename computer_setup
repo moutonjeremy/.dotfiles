@@ -302,6 +302,13 @@ function stow_ssh_config() {
   echo "✅ Ssh config retrieved."
 }
 
+function install_fonts() {
+  "🕑 Installing fonts."
+  cd ~/.dotfiles/fonts
+  cp * ~/Library/Fonts
+  echo "✅ Fonts installed."
+}
+
 ## Get script config
 function get_script_config() {
   if [[ -f .config ]]; then
