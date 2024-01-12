@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+m1ddc display $(m1ddc display list | grep U3419W | awk '{print $1}') set input 17 && m1ddc display $(m1ddc display list | grep S2721D | awk '{print $1}') set input 18
+
