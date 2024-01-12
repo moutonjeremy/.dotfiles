@@ -158,6 +158,7 @@ function proton_drive_is_ready() {
 }
 
 function stow_folders() {
+  cd ~/.dotfiles
   echo "🕑 Stowing folders."
   /opt/homebrew/bin/stow -t ~ git
   cd zsh
@@ -196,7 +197,7 @@ function app_rename() {
 function get_private_config() {
   echo "🕑 Checking if Proton Drive is ready for getting private config."
   status=$(proton_drive_is_ready)
-  if [[ $status -ne "proton drive ready" ]]; then
+  if [[ "$status" != "proton drive ready" ]]; then
     echo "❌ Proton Drive not ready; $status; skipping."
     return
   fi
@@ -252,7 +253,7 @@ function get_git_repo() {
   echo "🕑 Getting git repos."
   echo "🕑 Checking if Proton Drive is ready for getting repo list."
   status=$(proton_drive_is_ready)
-  if [[ $status -ne "proton drive ready" ]]; then
+  if [[ "$status" != "proton drive ready" ]]; then
     echo "❌ Proton Drive not ready; $status; skipping."
     return
   fi
@@ -273,7 +274,7 @@ function clone_repos() {
   folder=$1
   cd ~/$folder
   if [[ -z $(test ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal/git-repos) ]]; then
-    echo "❌ No git repos found; skipping."
+    echo "❌ No git repos list found; skipping."
     return
   else
     for repo in $(cat ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal/git-repos); do
@@ -288,7 +289,7 @@ function stow_ssh_config() {
   echo "🕑 Configuring ssh config."
   echo "🕑 Checking if Proton Drive is ready for getting ssh config."
   status=$(proton_drive_is_ready)
-  if [[ $status -ne "proton drive ready" ]]; then
+  if [[ "$status" != "proton drive ready" ]]; then
     echo "❌ Proton Drive not ready; $status; skipping."
     return
   fi
