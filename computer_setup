@@ -160,11 +160,11 @@ function proton_drive_is_ready() {
 function stow_folders() {
   cd ~/.dotfiles
   echo "🕑 Stowing folders."
-  /opt/homebrew/bin/stow -t ~ git
+  /opt/homebrew/bin/stow -R -t ~ git
   cd zsh
-  /opt/homebrew/bin/stow -t ~ config
+  /opt/homebrew/bin/stow -R -t ~ config
   cd ..
-  /opt/homebrew/bin/stow -t ~ tfswitch
+  /opt/homebrew/bin/stow -R -t ~ tfswitch
   echo "✅ Folders stowed."
 }
 
@@ -295,9 +295,12 @@ function stow_ssh_config() {
   fi
 
   echo "🕑 Getting ssh config."
+  if [ -d ~/.ssh ]; then
+    mv ~/.ssh ~/.ssh-old
+  fi
   mkdir -p ~/.ssh
   cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
-  /opt/homebrew/bin/stow -t ~/.ssh ssh
+  /opt/homebrew/bin/stow -R -t ~/.ssh ssh
   cd ~
   echo "✅ Ssh config retrieved."
 }
