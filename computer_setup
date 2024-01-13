@@ -53,6 +53,7 @@ brew_cask_apps_personal=(
   parsec
   obs
   streamlabs
+  chatterino
 )
 
 brew_cask_apps_work=(
