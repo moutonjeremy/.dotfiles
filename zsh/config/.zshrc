@@ -52,7 +52,7 @@ zstyle ':z4h:' iterm2-integration 'yes'
 z4h init || return
 
 # Extend PATH.
-path=(~/bin $HOME/.krew/bin /opt/homebrew/bin $HOME/go/bin $path)
+path=(~/bin $HOME/.krew/bin /opt/homebrew/bin $HOME/go/bin $HOME/development/go/bin $path)
 
 # Export environment variables.
 export GPG_TTY=$TTY
