@@ -44,6 +44,7 @@ brew_cask_apps_base=(
   amethyst
   proton-drive
   elgato-stream-deck
+  obsidian
 )
 
 brew_cask_apps_personal=(
