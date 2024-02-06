@@ -8,6 +8,8 @@ get_config=""
 proton_drive_email=""
 config_exists=false
 current_dir=$(pwd)
+timestamp=$(date +%s)
+disable_install_apps=false
 
 ########### Applications ###########
 brew_apps=(
@@ -205,7 +207,7 @@ function get_private_config() {
     return
   fi
   echo "🕑 Getting private config."
-  if [[ computer_type -eq "w" ]]; then
+  if [[ $computer_type == "w" ]]; then
     echo "🕑 Getting private config for work computer."
     mkdir -p ~/{.aws,.kube}
     cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/work
@@ -215,7 +217,7 @@ function get_private_config() {
     echo "✅ Private config for work computer retrieved."
   else
     echo "🕑 Getting private config for personal computer."
-    mkdir ~/{.kube}
+    mkdir -p ~/{.kube}
     cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
     /opt/homebrew/bin/stow -t ~/.kube kube
     cd ~
@@ -299,7 +301,7 @@ function stow_ssh_config() {
 
   echo "🕑 Getting ssh config."
   if [ -d ~/.ssh ]; then
-    mv ~/.ssh ~/.ssh-old
+    mv ~/.ssh ~/.ssh-old-$timestamp
   fi
   mkdir -p ~/.ssh
   cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
@@ -345,7 +347,9 @@ function get_script_config() {
 
 ## Configure computer based on config
 function configure_computer() {
-  install_macos_apps
+  if [[ "$disable_install_apps" == "false" ]]; then
+    install_macos_apps
+  fi
   stow_ssh_config
   stow_folders
   get_private_config
@@ -362,6 +366,9 @@ case $1 in
     exit 0
     ;;
   configure_computer | -c | --configure_computer)
+    if [[ $2 == "--no-install-app" ]] || [[ $2 == "-nia" ]]; then
+      disable_install_apps=true
+    fi
     echo "🕑 Configuring computer."
     get_script_config
     configure_computer
@@ -382,6 +389,7 @@ case $1 in
     echo "⏩ Valid options are:"
     echo "     Upgrade all apps >> upgrade | -u | --upgrade"
     echo "     Configure computer >> configure_computer | -c | --configure_computer"
+    echo "        Configure computer without installing apps >> configure_computer -c --no-install-app | -nia"
     echo "     Debug >> debug | -d | --debug"
     echo "     Help >> * | -h | --help"
     exit 0
