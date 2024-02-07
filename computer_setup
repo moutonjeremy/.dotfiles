@@ -31,6 +31,7 @@ brew_apps=(
   stow
   tflint
   terraform-docs
+  golangci-lint
 )
 
 brew_cask_apps_base=(
@@ -48,6 +49,7 @@ brew_cask_apps_base=(
   elgato-stream-deck
   docker
   ngrok
+  another-redis-desktop-manager
 )
 
 brew_cask_apps_personal=(
