@@ -44,9 +44,8 @@ brew_cask_apps_base=(
   alt-tab
   raycast
   tableplus
-  amethyst
+  rectangle
   proton-drive
-  elgato-stream-deck
   docker
   ngrok
   another-redis-desktop-manager
