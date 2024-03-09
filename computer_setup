@@ -218,9 +218,10 @@ function get_private_config() {
     echo "✅ Private config for work computer retrieved."
   else
     echo "🕑 Getting private config for personal computer."
-    mkdir -p ~/{.kube}
+    mkdir -p ~/{.aws,.kube}
     cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
     /opt/homebrew/bin/stow -t ~/.kube kube
+    /opt/homebrew/bin/stow -t ~/.kube aws
     cd ~
     echo "✅ Private config for personal computer retrieved."
   fi
