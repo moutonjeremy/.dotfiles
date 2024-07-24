@@ -32,6 +32,7 @@ brew_apps=(
   tflint
   terraform-docs
   golangci-lint
+  eza
 )
 
 brew_cask_apps_base=(
