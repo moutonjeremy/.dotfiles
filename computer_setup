@@ -10,6 +10,7 @@ config_exists=false
 current_dir=$(pwd)
 timestamp=$(date +%s)
 disable_install_apps=false
+drive_folder=""
 
 ########### Applications ###########
 brew_apps=(
@@ -157,9 +158,10 @@ function proton_drive_is_ready() {
   if [[ -z $proton_drive_email ]]; then
     echo "no email"
   fi
-  if [[ -z $(ls ~/Library/CloudStorage | grep "ProtonDrive-$proton_drive_email") ]]; then
+  if [[ -z $(ls ~/Library/CloudStorage | grep "$drive_folder") ]]; then
     echo "no proton drive folder"
   else
+    drive_folder=$(ls ~/Library/CloudStorage | grep "ProtonDrive")
     echo "proton drive ready"
   fi
 }
@@ -212,7 +214,7 @@ function get_private_config() {
   if [[ $computer_type == "w" ]]; then
     echo "🕑 Getting private config for work computer."
     mkdir -p ~/{.aws,.kube}
-    cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/work
+    cd ~/Library/CloudStorage/$drive_folder/dotfiles/work
     /opt/homebrew/bin/stow -t ~/.aws aws
     /opt/homebrew/bin/stow -t ~/.kube kube
     cd ~
@@ -220,7 +222,7 @@ function get_private_config() {
   else
     echo "🕑 Getting private config for personal computer."
     mkdir -p ~/{.aws,.kube}
-    cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
+    cd ~/Library/CloudStorage/$drive_folder/dotfiles/personal
     /opt/homebrew/bin/stow -t ~/.kube kube
     /opt/homebrew/bin/stow -t ~/.kube aws
     cd ~
@@ -281,11 +283,11 @@ function get_git_repo() {
 function clone_repos() {
   folder=$1
   cd ~/$folder
-  if [[ -z $(test ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal/git-repos) ]]; then
+  if [[ -z $(test ~/Library/CloudStorage/$drive_folder/dotfiles/personal/git-repos) ]]; then
     echo "❌ No git repos list found; skipping."
     return
   else
-    for repo in $(cat ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal/git-repos); do
+    for repo in $(cat ~/Library/CloudStorage/$drive_folder/dotfiles/personal/git-repos); do
       git clone "$repo"
     done
   fi
@@ -307,7 +309,7 @@ function stow_ssh_config() {
     mv ~/.ssh ~/.ssh-old-$timestamp
   fi
   mkdir -p ~/.ssh
-  cd ~/Library/CloudStorage/ProtonDrive-$proton_drive_email/dotfiles/personal
+  cd ~/Library/CloudStorage/$drive_folder/dotfiles/personal
   /opt/homebrew/bin/stow -R -t ~/.ssh ssh
   cd ~
   echo "✅ Ssh config retrieved."
@@ -353,6 +355,7 @@ function configure_computer() {
   if [[ "$disable_install_apps" == "false" ]]; then
     install_macos_apps
   fi
+  proton_drive_is_ready
   stow_ssh_config
   stow_folders
   get_private_config
