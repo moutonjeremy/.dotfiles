@@ -315,6 +315,14 @@ function stow_ssh_config() {
   echo "✅ Ssh config retrieved."
 }
 
+## Configure terraform
+function terraform_config() {
+  echo "🕑 Configuring terraform."
+  cd ~/.dotfiles
+  /opt/homebrew/bin/stow -R -t ~/ terraform
+  echo "✅ Terraform config retrieved."
+}
+
 function install_fonts() {
   "🕑 Installing fonts."
   cd ~/.dotfiles/fonts
@@ -357,6 +365,7 @@ function configure_computer() {
   fi
   proton_drive_is_ready
   stow_ssh_config
+  terraform_config
   stow_folders
   get_private_config
   kubectl_configure
