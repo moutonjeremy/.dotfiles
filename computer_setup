@@ -23,7 +23,6 @@ brew_apps=(
   bruno
   awscli
   aws-iam-authenticator
-  m1ddc
   terraform
   helm
   warrensbox/tap/tfswitch
@@ -37,11 +36,10 @@ brew_apps=(
 )
 
 brew_cask_apps_base=(
-  iterm2
+  ghostty
   arc
   spotify
   visual-studio-code
-  notion
   slack
   alt-tab
   raycast
