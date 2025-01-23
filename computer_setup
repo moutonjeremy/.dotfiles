@@ -48,8 +48,7 @@ brew_cask_apps_base=(
 
 ########### Kubectl Plugins ###########
 kubectl_plugins=(
-  switch-config
-  socks5-proxy
+
 )
 
 ########### Functions ###########
@@ -191,7 +190,12 @@ function macos_config_command() {
   defaults write com.apple.desktopservices DSDontWriteNetworkStores true
   # Disable finder tags
   defaults write com.apple.finder TagsWindow -dict-add "ShowTagsWindow" -bool false
-
+  # Change scroll direction to natural
+  defaults write -g com.apple.swipescrolldirection -bool false
+  # Dock icon size
+  defaults write com.apple.dock tilesize -int 32
+  # Disable last used app in dock
+  defaults write com.apple.dock show-recents -bool false  
 }
 
 ## Configure kubectl
