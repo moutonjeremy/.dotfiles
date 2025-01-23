@@ -160,6 +160,16 @@ function stow_folders() {
   echo "✅ Folders stowed."
 }
 
+function ghostty_config() {
+  echo "🕑 Copy Ghostty configuration file"
+  if [[ -z (ls "~/Library/Application Support/com.mitchellh.ghostty") ]]; then
+    echo "❌ no configuration folder"
+  else
+    cp config ~/Library/Application\ Support/com.mitchellh.ghostty/config
+  fi
+  echo "✅ Ghostty configuration done"
+}
+
 function app_rename() {
   case $1 in
     alt-tab)
@@ -346,6 +356,7 @@ function configure_computer() {
   get_private_config
   kubectl_configure
   macos_config_command
+  ghostty_config
   # get_git_repo
 }
 
