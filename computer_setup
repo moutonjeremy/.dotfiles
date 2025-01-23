@@ -206,7 +206,9 @@ function macos_config_command() {
   # Dock icon size
   defaults write com.apple.dock tilesize -int 32
   # Disable last used app in dock
-  defaults write com.apple.dock show-recents -bool false  
+  defaults write com.apple.dock show-recents -bool false
+  # Clear dock
+  defaults write com.apple.dock persistent-apps -array
   # Application in dock
   for app in "${dock_apps[@]}"; do
     app_escaped=$(echo "$app" | sed 's/ /\\ /g')
