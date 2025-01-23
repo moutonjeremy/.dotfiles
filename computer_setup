@@ -30,6 +30,7 @@ brew_apps=(
   terraform-docs
   golangci-lint
   eza
+  ollama
 )
 
 brew_cask_apps_base=(
