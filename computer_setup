@@ -320,6 +320,7 @@ function configure_computer() {
   stow_folders
   get_private_config
   kubectl_configure
+  macos_config_command
   # get_git_repo
 }
 
