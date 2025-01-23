@@ -23,7 +23,6 @@ brew_apps=(
   aws-iam-authenticator
   terraform
   helm
-  warrensbox/tap/tfswitch
   kubectx
   argocd
   stow
