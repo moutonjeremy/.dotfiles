@@ -163,7 +163,7 @@ function stow_folders() {
 
 function ghostty_config() {
   echo "🕑 Copy Ghostty configuration file"
-  if [[ -z (ls "~/Library/Application Support/com.mitchellh.ghostty") ]]; then
+  if [[ ! -d "$HOME/Library/Application Support/com.mitchellh.ghostty" ]]; then
     echo "❌ no configuration folder"
   else
     cp config ~/Library/Application\ Support/com.mitchellh.ghostty/config
