@@ -196,6 +196,9 @@ function macos_config_command() {
   defaults write com.apple.dock tilesize -int 32
   # Disable last used app in dock
   defaults write com.apple.dock show-recents -bool false  
+
+  # Kill dock
+  killall Dock
 }
 
 ## Configure kubectl
