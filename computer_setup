@@ -3,7 +3,6 @@
 set -e
 
 ########### Variables ###########
-computer_type=""
 get_config=""
 proton_drive_email=""
 config_exists=false
@@ -20,7 +19,6 @@ brew_apps=(
   zsh-syntax-highlighting
   zsh-autosuggestions
   go
-  bruno
   awscli
   aws-iam-authenticator
   terraform
@@ -42,29 +40,11 @@ brew_cask_apps_base=(
   visual-studio-code
   slack
   alt-tab
-  raycast
-  tableplus
-  rectangle
   proton-drive
-  docker
-  ngrok
-  another-redis-desktop-manager
-)
-
-brew_cask_apps_personal=(
   discord
   vlc
   bambu-studio
   parsec
-  obs
-  streamlabs
-  chatterino
-)
-
-brew_cask_apps_work=(
-  zoom
-  openvpn-connect
-  aws-vpn-client
 )
 
 ########### Kubectl Plugins ###########
@@ -124,24 +104,6 @@ function brew_apps_install() {
   done
 }
 
-# install brew cask apps if not installed
-function brew_cask_apps_install() {
-  if [ "$computer_type" == "w" ]; then
-    brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_work[@]}")
-  else
-    brew_cask_apps=("${brew_cask_apps_base[@]}" "${brew_cask_apps_personal[@]}")
-  fi
-  for app in "${brew_cask_apps[@]}"; do
-    mac_name=$(app_rename $app)
-    if ! $(/opt/homebrew/bin/brew list $app >/dev/null 2>&1) && [[ -z $(ls /Applications | tr '[:upper:]' '[:lower:]' | grep "$mac_name") ]]; then
-      echo "🕑 Installing $app."
-      /opt/homebrew/bin/brew install --cask $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
-    else 
-      echo "⏩ $app seems to already be installed; skipping."
-    fi
-  done
-}
-
 function upgrade_apps() {
   echo "🕑 Upgrading brew apps."
   if $(/opt/homebrew/bin/brew upgrade >/dev/null 2>&1); then
@@ -177,17 +139,11 @@ function stow_folders() {
 
 function app_rename() {
   case $1 in
-    iterm2)
-      echo "iterm"
-      ;;
     alt-tab)
       echo "alttab"
       ;;
     visual-studio-code)
       echo "visual studio code"
-      ;;
-    aws-vpn-client)
-      echo "aws vpn client"
       ;;
     bambu-studio)
       echo "bambustudio"
@@ -209,27 +165,20 @@ function get_private_config() {
     return
   fi
   echo "🕑 Getting private config."
-  if [[ $computer_type == "w" ]]; then
-    echo "🕑 Getting private config for work computer."
-    mkdir -p ~/{.aws,.kube}
-    cd ~/Library/CloudStorage/$drive_folder/dotfiles/work
-    /opt/homebrew/bin/stow -t ~/.aws aws
-    /opt/homebrew/bin/stow -t ~/.kube kube
-    cd ~
-    echo "✅ Private config for work computer retrieved."
-  else
-    echo "🕑 Getting private config for personal computer."
-    mkdir -p ~/{.aws,.kube}
-    cd ~/Library/CloudStorage/$drive_folder/dotfiles/personal
-    /opt/homebrew/bin/stow -t ~/.kube kube
-    /opt/homebrew/bin/stow -t ~/.kube aws
-    cd ~
-    echo "✅ Private config for personal computer retrieved."
-  fi
+  mkdir -p ~/{.aws,.kube}
+  cd ~/Library/CloudStorage/$drive_folder/dotfiles/personal
+  /opt/homebrew/bin/stow -t ~/.kube kube
+  /opt/homebrew/bin/stow -t ~/.kube aws
+  cd ~
+  echo "✅ Private config retrieved."
 }
 
 function macos_config_command() {
-  defaults write com.apple.desktopservices DSDontWriteNetworkStores true # Disable .DS_Store files on network volumes
+  # Disable .DS_Store files on network volumes
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+  # Disable finder tags
+  defaults write com.apple.finder TagsWindow -dict-add "ShowTagsWindow" -bool false
+
 }
 
 ## Configure kubectl
@@ -265,16 +214,9 @@ function get_git_repo() {
     echo "❌ Proton Drive not ready; $status; skipping."
     return
   fi
-  if [[ $computer_type -eq "w" ]]; then
-    echo "🕑 Getting git repo for work computer."
-    mkdir -p ~/work
-    clone_repos work
-  else
-    echo "🕑 Getting git repo for personal computer."
-    mkdir -p ~/{personal,biz}
-    clone_repos personal
-    clone_repos biz
-  fi
+  echo "🕑 Getting git repo for personal computer."
+  mkdir -p ~/{personal,biz}
+  clone_repos personal
 }
 
 ## Clone repos from repo list in Proton Drive
@@ -331,17 +273,12 @@ function install_fonts() {
 ## Get script config
 function get_script_config() {
   if [[ -f .config ]]; then
-    computer_type=$(cat .config | grep computer_type | cut -d "=" -f2)
     get_config=$(cat .config | grep get_config | cut -d "=" -f2)
     proton_drive_email=$(cat .config | grep proton_drive_email | cut -d "=" -f2)
     config_exists=true
   fi
 
   if [[ "$config_exists" == "false" ]]; then
-    # Ask if the computer is for work or personal
-    echo "❓ Is this computer for work or personal? (w/p)"
-    read -r computer_type
-
     echo "❓ Get private config from Proton Drive? (y/n)"
     read -r get_config
 
@@ -350,7 +287,6 @@ function get_script_config() {
       read -r proton_drive_email
     fi
 
-    echo "computer_type=$computer_type" >>.config
     echo "get_config=$get_config" >>.config
     echo "proton_drive_email=$proton_drive_email" >>.config
   fi
@@ -367,7 +303,7 @@ function configure_computer() {
   stow_folders
   get_private_config
   kubectl_configure
-  get_git_repo
+  # get_git_repo
 }
 
 ########### Main ###########
@@ -390,7 +326,6 @@ case $1 in
   debug | -d | --debug)
     echo "🕑 Debugging."
     get_script_config
-    echo "computer_type=$computer_type"
     echo "get_config=$get_config"
     echo "proton_drive_email=$proton_drive_email"
     echo "proton_drive_status=$(proton_drive_is_ready)"
