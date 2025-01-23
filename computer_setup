@@ -30,7 +30,6 @@ brew_apps=(
   terraform-docs
   golangci-lint
   eza
-  ollama
 )
 
 brew_cask_apps_base=(
@@ -45,6 +44,7 @@ brew_cask_apps_base=(
   vlc
   bambu-studio
   parsec
+  ollama
 )
 
 ########### Kubectl Plugins ###########
@@ -165,9 +165,12 @@ function ghostty_config() {
   echo "🕑 Copy Ghostty configuration file"
   if [[ ! -d "$HOME/Library/Application Support/com.mitchellh.ghostty" ]]; then
     echo "❌ no configuration folder"
-  else
-    cp config ~/Library/Application\ Support/com.mitchellh.ghostty/config
+    mkdir "$HOME/Library/Application Support/com.mitchellh.ghostty"
   fi
+  if [ ! -L "$HOME/Library/Application Support/com.mitchellh.ghostty/config" ]; then
+    rm -rf "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
+  fi
+  ln -sf ghostty/config ~/Library/Application\ Support/com.mitchellh.ghostty/config
   echo "✅ Ghostty configuration done"
 }
 
