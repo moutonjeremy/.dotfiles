@@ -53,7 +53,7 @@ kubectl_plugins=(
 
 ########### Dock ###########
 dock_apps=(
-  "Visual Studio Code"
+  "Visual\ Studio\ Code"
   "Spotify"
   "Slack"
   "Arc"
