@@ -104,6 +104,20 @@ function brew_apps_install() {
   done
 }
 
+# install brew cask apps if not installed
+function brew_cask_apps_install() {
+  brew_cask_apps=("${brew_cask_apps_base[@]}")
+  for app in "${brew_cask_apps[@]}"; do
+    mac_name=$(app_rename $app)
+    if ! $(/opt/homebrew/bin/brew list $app >/dev/null 2>&1) && [[ -z $(ls /Applications | tr '[:upper:]' '[:lower:]' | grep "$mac_name") ]]; then
+      echo "🕑 Installing $app."
+      /opt/homebrew/bin/brew install --cask $app >/dev/null 2>&1 && echo "✅ $app installed." || echo "❌ $app failed to install."
+    else 
+      echo "⏩ $app seems to already be installed; skipping."
+    fi
+  done
+}
+
 function upgrade_apps() {
   echo "🕑 Upgrading brew apps."
   if $(/opt/homebrew/bin/brew upgrade >/dev/null 2>&1); then
