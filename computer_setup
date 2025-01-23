@@ -46,6 +46,7 @@ brew_cask_apps_base=(
   parsec
   ollama
   cursor
+  podman-desktop
 )
 
 ########### Kubectl Plugins ###########
