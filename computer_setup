@@ -60,8 +60,6 @@ dock_apps=(
 
 dock_system_apps=(
   "Finder"
-  "System Preferences"
-  "Dock"
 )
 
 ########### Functions ###########
