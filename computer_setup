@@ -368,6 +368,11 @@ case $1 in
     configure_computer
     exit 0
     ;;
+  interface | -i | --interface)
+    echo "🕑 Configuring interface."
+    macos_config_command
+    exit 0
+    ;;
   debug | -d | --debug)
     echo "🕑 Debugging."
     get_script_config
@@ -383,6 +388,7 @@ case $1 in
     echo "     Upgrade all apps >> upgrade | -u | --upgrade"
     echo "     Configure computer >> configure_computer | -c | --configure_computer"
     echo "        Configure computer without installing apps >> configure_computer -c --no-install-app | -nia"
+    echo "     Configure interface >> interface | -i | --interface"
     echo "     Debug >> debug | -d | --debug"
     echo "     Help >> * | -h | --help"
     exit 0
