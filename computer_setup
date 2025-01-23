@@ -212,10 +212,10 @@ function macos_config_command() {
     app_escaped=$(echo "$app" | sed 's/ /\\ /g')
     defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/'$app_escaped'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
   done
-  # System apps in dock
-  for app in "${dock_system_apps[@]}"; do
-    defaults write com.apple.dock persistent-others -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/System/Applications/'$app'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-  done
+  # # System apps in dock
+  # for app in "${dock_system_apps[@]}"; do
+  #   defaults write com.apple.dock persistent-others -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/System/Applications/'$app'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+  # done
 
   # Kill dock
   killall Dock
