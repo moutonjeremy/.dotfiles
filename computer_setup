@@ -51,6 +51,20 @@ kubectl_plugins=(
 
 )
 
+########### Dock ###########
+dock_apps=(
+  "Visual Studio Code"
+  "Spotify"
+  "Slack"
+  "Arc"
+)
+
+dock_system_apps=(
+  "Finder"
+  "System Preferences"
+  "Dock"
+)
+
 ########### Functions ###########
 function install_macos_apps() {
   # Install xcode command line tools
@@ -185,17 +199,27 @@ function get_private_config() {
   echo "✅ Private config retrieved."
 }
 
+
+
 function macos_config_command() {
   # Disable .DS_Store files on network volumes
   defaults write com.apple.desktopservices DSDontWriteNetworkStores true
-  # Disable finder tags
-  defaults write com.apple.finder TagsWindow -dict-add "ShowTagsWindow" -bool false
+  # Remove finder tags
+  defaults write com.apple.finder ShowRecentTags -bool false
   # Change scroll direction to natural
   defaults write -g com.apple.swipescrolldirection -bool false
   # Dock icon size
   defaults write com.apple.dock tilesize -int 32
   # Disable last used app in dock
   defaults write com.apple.dock show-recents -bool false  
+  # Application in dock
+  for app in "${dock_apps[@]}"; do
+    defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/'$app'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+  done
+  # System apps in dock
+  for app in "${dock_system_apps[@]}"; do
+    defaults write com.apple.dock persistent-others -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/System/Applications/'$app'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+  done
 
   # Kill dock
   killall Dock
