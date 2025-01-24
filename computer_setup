@@ -30,6 +30,8 @@ brew_apps=(
   terraform-docs
   golangci-lint
   eza
+  node@22
+  rustup
 )
 
 brew_cask_apps_base=(
