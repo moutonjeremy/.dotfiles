@@ -86,7 +86,9 @@ end
 local function createWorkspaces()
   sbar.exec(constants.aerospace.LIST_ALL_WORKSPACES, function(workspacesOutput)
     for workspaceName in workspacesOutput:gmatch("[^\r\n]+") do
-      addWorkspaceItem(workspaceName)
+      if spaceConfigs[workspaceName] then
+        addWorkspaceItem(workspaceName)
+      end
     end
 
     findAndSelectCurrentWorkspace()
