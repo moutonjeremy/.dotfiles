@@ -5,7 +5,7 @@ sbar.bar({
 	height = settings.dimens.graphics.bar.height,
 	color = settings.colors.bar.transparent,
 	padding_right = settings.dimens.padding.right,
-	padding = settings.dimens.padding.bar,
+	-- padding = settings.dimens.padding.bar,
 	padding_left = settings.dimens.padding.left,
 	margin = settings.dimens.padding.margin,
 	corner_radius = settings.dimens.graphics.background.corner_radius,
