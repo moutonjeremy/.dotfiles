@@ -23,7 +23,6 @@ brew_apps=(
   aws-iam-authenticator
   terraform
   helm
-  kubectx
   argocd
   stow
   tflint
@@ -32,6 +31,9 @@ brew_apps=(
   eza
   node@22
   rustup
+  sketchybar
+  lua
+  gh
 )
 
 brew_cask_apps_base=(
@@ -47,13 +49,22 @@ brew_cask_apps_base=(
   bambu-studio
   parsec
   ollama
-  cursor
   podman-desktop
+  nikitabobko/tap/aerospace
+)
+
+brew_tap_apps=(
+  FelixKratz/formulae
 )
 
 ########### Kubectl Plugins ###########
 kubectl_plugins=(
 
+)
+
+########### Services ###########
+services=(
+  sketchybar
 )
 
 ########### Dock ###########
@@ -95,6 +106,11 @@ function install_macos_apps() {
     echo "❌ Rosetta failed to install."
   fi
 
+  # install brew tap
+  echo "🕑 Tapping brew apps."
+  brew_tap_install
+  echo "✅ Brew apps tapped."
+
   # install brew apps
   echo "🕑 Installing brew apps."
   brew_apps_install
@@ -104,6 +120,18 @@ function install_macos_apps() {
   echo "🕑 Installing brew cask apps."
   brew_cask_apps_install
   echo "✅ Brew cask apps installed."
+}
+
+# install brew tap
+function brew_tap_install() {
+  for app in "${brew_tap_apps[@]}"; do
+    if ! $(/opt/homebrew/bin/brew tap | grep "$app" >/dev/null 2>&1); then
+      echo "🕑 Tapping $app."
+      /opt/homebrew/bin/brew tap $app >/dev/null 2>&1 && echo "✅ $app tapped." || echo "❌ $app failed to tap."
+    else 
+      echo "⏩ $app seems to already be tapped; skipping."
+    fi
+  done
 }
 
 # install brew apps if not installed
@@ -132,6 +160,7 @@ function brew_cask_apps_install() {
   done
 }
 
+## Upgrade brew apps
 function upgrade_apps() {
   echo "🕑 Upgrading brew apps."
   if $(/opt/homebrew/bin/brew upgrade >/dev/null 2>&1); then
@@ -154,7 +183,11 @@ function proton_drive_is_ready() {
   fi
 }
 
+## Stow folders
 function stow_folders() {
+  if [[ ! -d ~/.config ]]; then
+    mkdir ~/.config
+  fi
   cd ~/.dotfiles
   echo "🕑 Stowing folders."
   /opt/homebrew/bin/stow -R -t ~ git
@@ -162,9 +195,13 @@ function stow_folders() {
   /opt/homebrew/bin/stow -R -t ~ config
   cd ..
   /opt/homebrew/bin/stow -R -t ~ tfswitch
+  /opt/homebrew/bin/stow -R -t ~ aerospace
+  ln -sf ~/.dotfiles/sketchybar ~/.config/sketchybar
+  ln -sf ~/.dotfiles/nvim ~/.config/nvim
   echo "✅ Folders stowed."
 }
 
+## Configure Ghostty
 function ghostty_config() {
   echo "🕑 Copy Ghostty configuration file"
   if [[ ! -d "$HOME/Library/Application Support/com.mitchellh.ghostty" ]]; then
@@ -227,11 +264,27 @@ function macos_config_command() {
   defaults write com.apple.dock show-recents -bool false
   # Clear dock
   defaults write com.apple.dock persistent-apps -array
+  # Group windows by application in dock
+  defaults write com.apple.dock expose-group-apps -bool true
+  # Hide dock
+  defaults write com.apple.dock autohide -bool true
+  # Dock autohide delay
+  defaults write com.apple.dock autohide-delay -float 0
+  # Dock autohide animation
+  defaults write com.apple.dock autohide-time-modifier -float 0
+  # Hide top menu bar
+  defaults write NSGlobalDomain _HIHideMenuBar -bool true
+  # Disable window animations
+  defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
+  # Disable bouncing dock icons
+  defaults write com.apple.dock no-bouncing -bool true
+  # Move windows by dragging anywhere
+  defaults write -g NSWindowShouldDragOnGesture -bool true
   # Application in dock
-  for app in "${dock_apps[@]}"; do
-    app_escaped=$(echo "$app" | sed 's/ /\\ /g')
-    defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/'$app_escaped'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-  done
+  # for app in "${dock_apps[@]}"; do
+  #   app_escaped=$(echo "$app" | sed 's/ /\\ /g')
+  #   defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/'$app_escaped'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+  # done
   # # System apps in dock
   # for app in "${dock_system_apps[@]}"; do
   #   defaults write com.apple.dock persistent-others -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/System/Applications/'$app'.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
@@ -366,6 +419,16 @@ function configure_computer() {
   macos_config_command
   ghostty_config
   # get_git_repo
+}
+
+## Start services
+function start_services() {
+  echo "🕑 Starting services."
+  for service in "${services[@]}"; do
+    echo "🕑 Starting $service."
+    brew services start $service >/dev/null 2>&1 && echo "✅ $service started." || echo "❌ $service failed to start."
+  done
+  echo "✅ Services started."
 }
 
 ########### Main ###########
