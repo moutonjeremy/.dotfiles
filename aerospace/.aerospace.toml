@@ -61,7 +61,7 @@ inner.horizontal = 8
 inner.vertical = 8
 outer.left = 8
 outer.bottom = 8
-outer.top = 45
+outer.top = [{monitor."DELL U3419W" = 45}, 8]
 outer.right = 8
 
 [exec]                   # Again, you don't need to copy all config sections to your config.
@@ -128,7 +128,8 @@ alt-2 = 'workspace 2' # Terminal
 alt-3 = 'workspace 3' # VSCode
 alt-4 = 'workspace 4' # Slack
 alt-5 = 'workspace 5' # Spotify
-# alt-6 = 'workspace 6' # Other
+alt-6 = 'workspace 6' # Other
+alt-7 = 'workspace 7' # Other
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1' # Arc
@@ -136,7 +137,17 @@ alt-shift-2 = 'move-node-to-workspace 2' # Terminal
 alt-shift-3 = 'move-node-to-workspace 3' # VSCode
 alt-shift-4 = 'move-node-to-workspace 4' # Slack
 alt-shift-5 = 'move-node-to-workspace 5' # Spotify
-# alt-shift-6 = 'move-node-to-workspace 6' # Other
+alt-shift-6 = 'move-node-to-workspace 6' # Other
+alt-shift-7 = 'move-node-to-workspace 7' # Other
+
+[workspace-to-monitor-force-assignment]
+1 = 'main'
+2 = 'main'
+3 = 'main'
+4 = 'main'
+5 = 'main'
+6 = ['DELL S2721D', 'main']
+7 = ['Built-in Retina Display', 'main']
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
