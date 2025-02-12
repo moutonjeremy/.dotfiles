@@ -51,6 +51,8 @@ brew_cask_apps_base=(
   ollama
   podman-desktop
   nikitabobko/tap/aerospace
+  yaak
+  autodesk-fusion
 )
 
 brew_tap_apps=(
