@@ -91,7 +91,7 @@ local function createWorkspaces()
       end
     end
 
-    findAndSelectCurrentWorkspace()
+    -- findAndSelectCurrentWorkspace()
   end)
 end
 

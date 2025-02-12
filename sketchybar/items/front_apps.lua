@@ -64,8 +64,8 @@ local function getWindows()
   sbar.exec(constants.aerospace.LIST_WINDOWS, updateWindows)
 end
 
-frontAppWatcher:subscribe(constants.events.UPDATE_WINDOWS, function()
-  getWindows()
-end)
+-- frontAppWatcher:subscribe(constants.events.UPDATE_WINDOWS, function()
+--   getWindows()
+-- end)
 
 getWindows()
