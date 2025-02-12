@@ -54,6 +54,7 @@ brew_cask_apps_base=(
   yaak
   autodesk-fusion
   zen-browser
+  font-space-mono-nerd-font
 )
 
 brew_tap_apps=(
