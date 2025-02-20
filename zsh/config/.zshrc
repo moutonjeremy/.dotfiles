@@ -111,5 +111,5 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
-export PATH="/opt/homebrew/opt/node@20/bin:$HOME/.cargo/env:$PATH"
+export PATH="/opt/homebrew/opt/node@22/bin:$:$PATH"
 export TERM=xterm-256color
