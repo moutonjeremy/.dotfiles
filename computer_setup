@@ -56,6 +56,7 @@ brew_cask_apps_base=(
   zen-browser
   font-space-mono-nerd-font
   steam
+  cursor
 )
 
 brew_tap_apps=(
@@ -453,6 +454,11 @@ case $1 in
     configure_computer
     exit 0
     ;;
+  configure_computer | -ia | --install-apps)
+    echo "🕑 Installing apps."
+    install_macos_apps
+    exit 0
+    ;;
   interface | -i | --interface)
     echo "🕑 Configuring interface."
     macos_config_command
@@ -472,7 +478,8 @@ case $1 in
     echo "⏩ Valid options are:"
     echo "     Upgrade all apps >> upgrade | -u | --upgrade"
     echo "     Configure computer >> configure_computer | -c | --configure_computer"
-    echo "        Configure computer without installing apps >> configure_computer -c --no-install-app | -nia"
+    echo "     Configure computer without installing apps >> configure_computer -c --no-install-app | -nia"
+    echo "     Install apps >> configure_computer -ia | --install-apps"
     echo "     Configure interface >> interface | -i | --interface"
     echo "     Debug >> debug | -d | --debug"
     echo "     Help >> * | -h | --help"
