@@ -61,7 +61,7 @@ inner.horizontal = 8
 inner.vertical = 8
 outer.left = 8
 outer.bottom = 8
-outer.top = [{monitor."DELL U3419W" = 45}, {monitor."DELL S2721D" = 45}, 8]
+outer.top = 8
 outer.right = 8
 
 [exec]                   # Again, you don't need to copy all config sections to your config.
