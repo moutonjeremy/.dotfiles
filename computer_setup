@@ -31,7 +31,7 @@ brew_apps=(
   eza
   node@22
   rustup
-  sketchybar
+  # sketchybar
   lua
   gh
 )
@@ -70,7 +70,7 @@ kubectl_plugins=(
 
 ########### Services ###########
 services=(
-  sketchybar
+  # sketchybar
 )
 
 ########### Dock ###########
@@ -202,7 +202,7 @@ function stow_folders() {
   cd ..
   /opt/homebrew/bin/stow -R -t ~ tfswitch
   /opt/homebrew/bin/stow -R -t ~ aerospace
-  ln -sf ~/.dotfiles/sketchybar ~/.config/sketchybar
+  # ln -sf ~/.dotfiles/sketchybar ~/.config/sketchybar
   ln -sf ~/.dotfiles/nvim ~/.config/nvim
   echo "✅ Folders stowed."
 }
@@ -273,13 +273,13 @@ function macos_config_command() {
   # Group windows by application in dock
   defaults write com.apple.dock expose-group-apps -bool true
   # Hide dock
-  defaults write com.apple.dock autohide -bool true
+  # defaults write com.apple.dock autohide -bool true
   # Dock autohide delay
-  defaults write com.apple.dock autohide-delay -float 0
+  # defaults write com.apple.dock autohide-delay -float 0
   # Dock autohide animation
-  defaults write com.apple.dock autohide-time-modifier -float 0
+  # defaults write com.apple.dock autohide-time-modifier -float 0
   # Hide top menu bar
-  defaults write NSGlobalDomain _HIHideMenuBar -bool true
+  # defaults write NSGlobalDomain _HIHideMenuBar -bool true
   # Disable window animations
   defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
   # Disable bouncing dock icons
